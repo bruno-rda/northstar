@@ -1,0 +1,20 @@
+name: check
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build # generates src/api, which type-aware lint needs
+      - run: npm run lint
+      # Gate on what ships in the bundle; dev tooling (codegen, lint) only processes our own files.
+      - run: npm audit --omit=dev --audit-level=high

@@ -1,0 +1,45 @@
+[project]
+name = "northstar-api"
+version = "0.1.0"
+description = "Single FastAPI backend serving the northstar-console (staff) and northstar-web (user) surfaces."
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
+    "pydantic>=2.9",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.6",
+    "mypy>=1.11",
+    "pytest>=8.3",
+    "httpx>=0.27",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+# S = bandit-equivalent security rules; ASYNC guards the event loop once a real DB lands;
+# DTZ rejects naive datetimes.
+select = ["E", "F", "I", "UP", "B", "S", "ASYNC", "DTZ", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+# store.py is the throwaway seed file; dense one-record-per-line literals read
+# better than wrapped, so line-length is not enforced there.
+"store.py" = ["E501", "S311", "S324"]
+"tests/**" = ["S101"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+
+[tool.ruff.format]
+# Keep store.py's one-record-per-line seed literals intact (see per-file-ignores above).
+exclude = ["store.py"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
